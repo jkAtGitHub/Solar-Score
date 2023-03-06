@@ -1,4 +1,4 @@
-from pvlib import solarposition, location, pvsystem
+from pvlib import solarposition, location, pvsystem, clearsky
 import pandas as pd
 
 # Define location
@@ -17,11 +17,14 @@ end_date = start_date + pd.Timedelta(hours=1)
 times = pd.date_range(start_date, end_date, freq='1s', tz=tz)
 solar_position = solarposition.get_solarposition(times, latitude, longitude)
 
+# Get clear sky data
+clearsky_data = clearsky.get_clearsky(times, location)
+
 # Define PV system parameters
 system = pvsystem.PVSystem(surface_tilt=20, surface_azimuth=180, module_parameters=None, inverter_parameters=None)
 
 # Get PV system performance data
-irradiance = solar_position['dni']
+irradiance = clearsky_data['dni']
 temp_air = 20
 wind_speed = 0
 system_data = pvsystem.get_pvwatts_tmy(location, surface_tilt=20, surface_azimuth=180)
